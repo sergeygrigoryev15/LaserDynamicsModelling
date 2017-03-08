@@ -1,0 +1,17 @@
+{
+  "length": "1.2",
+  "parts": [
+    {
+      "part_name": "active media",
+      "length": "0.2"
+    },
+    {
+      "part_name": "vacuum",
+      "length": "0.9"
+    },
+    {
+      "part_name": "saturable absorber",
+      "length": "0.1"
+    }
+  ]
+}
