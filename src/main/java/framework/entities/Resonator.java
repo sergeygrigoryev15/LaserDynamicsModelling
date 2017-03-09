@@ -4,6 +4,7 @@ import framework.entities.resonatorParts.BaseResonatorPart;
 
 public class Resonator {
 
+    public static final float speedOfLight = 3.0e8f;
     private double length;
     private BaseResonatorPart[] parts;
 
