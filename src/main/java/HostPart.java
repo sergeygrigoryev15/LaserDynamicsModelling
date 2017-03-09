@@ -1,4 +1,3 @@
-import framework.PropertiesResourceManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jocl.*;
@@ -14,12 +13,6 @@ public class HostPart {
 
     private static final String kernelName = "sampleKernel";
     private static final String clFileName = "LaserDynamics.cl";
-
-    private static final String propertiesFileName = "stage.properties";
-    private static final PropertiesResourceManager props = new PropertiesResourceManager(propertiesFileName);
-
-    private static final float speedOfLight = Float.valueOf(props.getProperty("speedOfLight"));
-    private static final float planksconst = Float.valueOf(props.getProperty("planksconst"));
 
     private static final Logger logger = LogManager.getLogger();
 
