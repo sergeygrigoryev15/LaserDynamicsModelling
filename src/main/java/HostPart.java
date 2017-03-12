@@ -1,3 +1,5 @@
+import framework.ResonatorBuilder;
+import framework.entities.Resonator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jocl.*;
@@ -41,7 +43,7 @@ public class HostPart {
      */
     public static void main(String args[]) {
 
-        //Resonator resonator = new ResonatorBuilder().buildResonator();
+        Resonator resonator = new ResonatorBuilder().buildResonator();
 
         // Create input- and output data
         float srcArrayA[] = new float[arraysLength];

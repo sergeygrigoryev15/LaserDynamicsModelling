@@ -2,16 +2,20 @@
   "length": "1.2",
   "parts": [
     {
-      "part_name": "active media",
+      "type": "active media",
+      "name": "Ruby",
+      "ions concentration": "0.0005",
       "length": "0.2"
     },
     {
-      "part_name": "vacuum",
+      "type": "vacuum",
       "length": "0.9"
     },
     {
-      "part_name": "saturable absorber",
-      "length": "0.1"
+      "type": "saturable absorber",
+      "name": "NdYag",
+      "ions concentration": "0.0005",
+      "length": "0.2"
     }
   ]
 }
