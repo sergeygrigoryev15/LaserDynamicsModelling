@@ -1,3 +1,4 @@
+import framework.KernelBuilder;
 import framework.ResonatorBuilder;
 import framework.entities.Resonator;
 import org.apache.logging.log4j.LogManager;
@@ -21,20 +22,13 @@ public class HostPart {
     private static final int maxGlobalWorkSize = 10;
     private static final int arraysLength = 10;
 
+    private static String programSource;
+
     private static cl_program program;
     private static cl_kernel kernel;
     private static cl_context context;
     private static cl_command_queue commandQueue;
     private static cl_mem memObjects[] = new cl_mem[3];
-
-    /**
-     * example of the generated kernel.
-     */
-    private static String programSource =
-            "__kernel void " + kernelName + "(__global const float *a, __global const float *b, __global float *c){" +
-                    "    int gid = get_global_id(0);" +
-                    "    c[gid] = a[gid] * b[gid];" +
-            "}";
 
     /**
      * Main part of the Host Part.
@@ -44,6 +38,7 @@ public class HostPart {
     public static void main(String args[]) {
 
         Resonator resonator = new ResonatorBuilder().buildResonator();
+        programSource = new KernelBuilder(resonator).get();
 
         // Create input- and output data
         float srcArrayA[] = new float[arraysLength];
