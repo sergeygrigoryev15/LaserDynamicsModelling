@@ -67,7 +67,7 @@ public class ResonatorBuilder implements JsonFiles {
         return parts;
     }
 
-    public Resonator buildResonator(){
+    public Resonator buildResonator() {
         return new Resonator()
                 .setLength(getResonatorLength())
                 .setParts(getResonatorParts());

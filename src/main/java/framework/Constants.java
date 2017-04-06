@@ -2,8 +2,17 @@ package framework;
 
 public class Constants {
 
+    public enum KernelCreator {
+        CODE,
+        FILE
+    }
+
     private static final String propertiesFileName = "stage.properties";
     private static final PropertiesResourceManager props = new PropertiesResourceManager(propertiesFileName);
+
+    public static final String kernelCreator = props.getProperty("kernelCreator");
+    public static final String kernelName = props.getProperty("kernelName");
+    public static final String clFileName = props.getProperty("clFileName");
 
     public static final double resonatorPointsNumber = Double.valueOf(props.getProperty("resonatorPointsNumber"));
     public static final double time = Double.valueOf(props.getProperty("time"));

@@ -1,3 +1,4 @@
+import framework.Constants;
 import framework.KernelBuilder;
 import framework.ResonatorBuilder;
 import framework.entities.Resonator;
@@ -8,21 +9,17 @@ import org.jocl.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import static org.jocl.CL.*;
 
 public class HostPart {
 
-    private static final String kernelName = "sampleKernel";
-    private static final String clFileName = "LaserDynamics.cl";
-
     private static final Logger logger = LogManager.getLogger();
 
     private static final int maxGlobalWorkSize = 10;
     private static final int arraysLength = 10;
-
-    private static String programSource;
 
     private static cl_program program;
     private static cl_kernel kernel;
@@ -36,9 +33,6 @@ public class HostPart {
      * @param args Not used.
      */
     public static void main(String args[]) {
-
-        Resonator resonator = new ResonatorBuilder().buildResonator();
-        programSource = new KernelBuilder(resonator).get();
 
         // Create input- and output data
         float srcArrayA[] = new float[arraysLength];
@@ -72,20 +66,16 @@ public class HostPart {
         //output the results to the console
         IntStream.range(0, dstArray.length).mapToDouble(i -> dstArray[i]).forEach(System.out::println);
 
-        // Release kernel, program, and memory objects
-        clReleaseMemObject(memObjects[0]);
-        clReleaseMemObject(memObjects[1]);
-        clReleaseMemObject(memObjects[2]);
-
         shutdown();
     }
 
     /**
      * initializes all main parts of the program as kernel, program, command queue, context etc.
+     *
      * @param pointerA pointer to the first input data array.
      * @param pointerB pointer to the second input data array.
      */
-    private static void initialize(Pointer pointerA, Pointer pointerB) {
+    private static void initialize(final Pointer pointerA, final Pointer pointerB) {
         // The platform, device type and device number that will be used
         final int platformIndex = 0;
         final long deviceType = CL_DEVICE_TYPE_ALL;
@@ -129,17 +119,32 @@ public class HostPart {
         memObjects[1] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * arraysLength, pointerB, null);
         memObjects[2] = clCreateBuffer(context, CL_MEM_READ_WRITE, Sizeof.cl_float * arraysLength, null, null);
 
-        /*
-          Create the program from the source code or from existing kernel file
-          programSource = readFile(clFileName);
-         */
+        String programSource;
+        if (Constants.kernelCreator.equals(Constants.KernelCreator.CODE.name())) {
+            //Create kernel file from the source code
+            Resonator resonator = new ResonatorBuilder().buildResonator();
+            programSource = new KernelBuilder(resonator).buildKernel();
+        } else {
+            //Create the program from the existing kernel file
+            programSource = readFile(Constants.clFileName);
+        }
+
         program = clCreateProgramWithSource(context, 1, new String[]{programSource}, null, null);
 
         // Build the program
         clBuildProgram(program, 0, null, null, null, null);
 
         // Create the kernel
-        kernel = clCreateKernel(program, kernelName, null);
+        kernel = clCreateKernel(program, Constants.kernelName, null);
+    }
+
+    /**
+     * Clearing memory that points to objects.
+     *
+     * @param objects objects to release.
+     */
+    private static void releaseObjects(final cl_mem[] objects) {
+        Arrays.stream(objects).forEach(CL::clReleaseMemObject);
     }
 
     /**
@@ -148,7 +153,7 @@ public class HostPart {
      * @param fileName The name of the file to read.
      * @return The contents of the file.
      */
-    private static String readFile(String fileName) {
+    private static String readFile(final String fileName) {
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             StringBuilder sb = new StringBuilder();
             String line = null;
@@ -170,6 +175,8 @@ public class HostPart {
      * Release created kernel, program, command queue and context.
      */
     private static void shutdown() {
+        // Release kernel, program, and memory objects
+        releaseObjects(memObjects);
         clReleaseKernel(kernel);
         clReleaseProgram(program);
         clReleaseCommandQueue(commandQueue);

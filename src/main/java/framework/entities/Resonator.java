@@ -11,7 +11,7 @@ public class Resonator {
         return length;
     }
 
-    public Resonator setLength(double length) {
+    public Resonator setLength(final double length) {
         this.length = length;
         return this;
     }
@@ -20,7 +20,7 @@ public class Resonator {
         return parts;
     }
 
-    public Resonator setParts(BaseResonatorPart[] parts) {
+    public Resonator setParts(final BaseResonatorPart[] parts) {
         this.parts = parts;
         return this;
     }

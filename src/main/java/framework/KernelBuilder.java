@@ -10,21 +10,19 @@ public class KernelBuilder {
 
     private static Resonator resonator;
 
-    private static String programSource =
-            "__kernel void sampleKernel(__global const float *a, __global const float *b, __global float *c){" +
-                    "    int gid = get_global_id(0);" +
-                    "    c[gid] = a[gid] * b[gid];" +
-                    "}";
+    private static String initialString = "__kernel void %s(__global float* inPLUS, __global float* outPLUS,__global float* inMINUS,__global float* outMINUS){\n";
+
+    private static StringBuilder programSource = new StringBuilder(String.format(initialString, Constants.kernelName));
 
     public static Resonator getResonator() {
         return resonator;
     }
 
-    public static void setResonator(Resonator resonator) {
+    public static void setResonator(final Resonator resonator) {
         KernelBuilder.resonator = resonator;
     }
 
-    public KernelBuilder(Resonator resonator) {
+    public KernelBuilder(final Resonator resonator) {
         setResonator(resonator);
     }
 
@@ -37,13 +35,8 @@ public class KernelBuilder {
         }).toArray();
     }
 
-    public KernelBuilder buildKernel(){
+    public String buildKernel() {
 
-        return this;
+        return programSource.toString();
     }
-
-    public String get(){
-        return programSource;
-    }
-
 }

@@ -11,16 +11,16 @@ public enum ResonatorElementType {
 
     private final String value;
 
-    ResonatorElementType(String value) {
+    ResonatorElementType(final String value) {
         this.value = value;
     }
 
     @Contract(pure = true)
-    public String toString(){
+    public String toString() {
         return this.value;
     }
 
-    public static ResonatorElementType getNameByValue(String value){
-        return Arrays.stream(ResonatorElementType.values()).filter(type->value.equals(type.toString())).findFirst().get();
+    public static ResonatorElementType getNameByValue(final String value) {
+        return Arrays.stream(ResonatorElementType.values()).filter(type -> value.equals(type.toString())).findFirst().get();
     }
 }

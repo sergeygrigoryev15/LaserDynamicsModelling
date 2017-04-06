@@ -9,16 +9,16 @@ public enum ActiveMedia {
 
     private final String value;
 
-    ActiveMedia(String value) {
+    ActiveMedia(final String value) {
         this.value = value;
     }
 
     @Contract(pure = true)
-    public String toString(){
+    public String toString() {
         return this.value;
     }
 
-    public static ActiveMedia getNameByValue(String value){
-        return Arrays.stream(ActiveMedia.values()).filter(type->value.equals(type.toString())).findFirst().get();
+    public static ActiveMedia getNameByValue(final String value) {
+        return Arrays.stream(ActiveMedia.values()).filter(type -> value.equals(type.toString())).findFirst().get();
     }
 }

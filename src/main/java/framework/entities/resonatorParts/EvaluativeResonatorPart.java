@@ -14,28 +14,28 @@ class EvaluativeResonatorPart extends BaseResonatorPart implements JsonFiles {
     private double ionsConcentration;
     private String name;
 
-    EvaluativeResonatorPart(boolean isActiveMedia, String jsonFileName, double ionsConcentration){
+    EvaluativeResonatorPart(final boolean isActiveMedia, final String jsonFileName, final double ionsConcentration) {
         JsonObject jsonObject = null;
         String path = isActiveMedia ? AM_RESOURCES_DIR : SA_RESOURCES_DIR;
         try {
             jsonObject = (JsonObject) parser.parse(new FileReader(path.concat(jsonFileName).concat(".json")));
 
-        } catch (IOException ex){
+        } catch (IOException ex) {
             logger.fatal(String.format("Can't find json file %s : ", jsonFileName) + ex);
         }
         assert jsonObject != null;
         setLifeTime(jsonObject.get("life time").getAsDouble())
-            .setAbsorption(jsonObject.get("absorption").getAsDouble())
-            .setEmission(jsonObject.get("emission").getAsDouble())
-            .setIonsConcentration(ionsConcentration)
-            .setName(jsonFileName);
+                .setAbsorption(jsonObject.get("absorption").getAsDouble())
+                .setEmission(jsonObject.get("emission").getAsDouble())
+                .setIonsConcentration(ionsConcentration)
+                .setName(jsonFileName);
     }
 
     public double getLifeTime() {
         return lifeTime;
     }
 
-    public EvaluativeResonatorPart setLifeTime(double lifeTime) {
+    public EvaluativeResonatorPart setLifeTime(final double lifeTime) {
         this.lifeTime = lifeTime;
         return this;
     }
@@ -44,7 +44,7 @@ class EvaluativeResonatorPart extends BaseResonatorPart implements JsonFiles {
         return absorption;
     }
 
-    public EvaluativeResonatorPart setAbsorption(double absorption) {
+    public EvaluativeResonatorPart setAbsorption(final double absorption) {
         this.absorption = absorption;
         return this;
     }
@@ -53,7 +53,7 @@ class EvaluativeResonatorPart extends BaseResonatorPart implements JsonFiles {
         return emission;
     }
 
-    public EvaluativeResonatorPart setEmission(double emission) {
+    public EvaluativeResonatorPart setEmission(final double emission) {
         this.emission = emission;
         return this;
     }
@@ -62,7 +62,7 @@ class EvaluativeResonatorPart extends BaseResonatorPart implements JsonFiles {
         return ionsConcentration;
     }
 
-    public EvaluativeResonatorPart setIonsConcentration(double ionsConcentration) {
+    public EvaluativeResonatorPart setIonsConcentration(final double ionsConcentration) {
         this.ionsConcentration = ionsConcentration;
         return this;
     }
@@ -71,7 +71,7 @@ class EvaluativeResonatorPart extends BaseResonatorPart implements JsonFiles {
         return name;
     }
 
-    public EvaluativeResonatorPart setName(String name) {
+    public EvaluativeResonatorPart setName(final String name) {
         this.name = name;
         return this;
     }

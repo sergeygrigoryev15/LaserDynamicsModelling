@@ -8,7 +8,7 @@ public class BaseResonatorPart {
         return length;
     }
 
-    public void setLength(double length) {
+    public void setLength(final double length) {
         this.length = length;
     }
 }

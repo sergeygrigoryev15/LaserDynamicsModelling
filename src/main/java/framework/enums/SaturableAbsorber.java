@@ -9,16 +9,16 @@ public enum SaturableAbsorber {
 
     private final String value;
 
-    SaturableAbsorber(String value) {
+    SaturableAbsorber(final String value) {
         this.value = value;
     }
 
     @Contract(pure = true)
-    public String toString(){
+    public String toString() {
         return this.value;
     }
 
-    public static SaturableAbsorber getNameByValue(String value){
-        return Arrays.stream(SaturableAbsorber.values()).filter(type->value.equals(type.toString())).findFirst().get();
+    public static SaturableAbsorber getNameByValue(final String value) {
+        return Arrays.stream(SaturableAbsorber.values()).filter(type -> value.equals(type.toString())).findFirst().get();
     }
 }
