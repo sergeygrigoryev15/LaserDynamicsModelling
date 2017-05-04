@@ -18,14 +18,14 @@ public class HostPart {
 
     private static final Logger logger = LogManager.getLogger();
 
-    private static final int maxGlobalWorkSize = 10;
-    private static final int arraysLength = 10;
+    private static final int maxGlobalWorkSize = 1;
+    private static final int arraysLength = Constants.resonatorPointsNumber;
 
     private static cl_program program;
     private static cl_kernel kernel;
     private static cl_context context;
     private static cl_command_queue commandQueue;
-    private static cl_mem memObjects[] = new cl_mem[3];
+    private static cl_mem memObjects[] = new cl_mem[4];
 
     /**
      * Main part of the Host Part.
@@ -35,23 +35,26 @@ public class HostPart {
     public static void main(String args[]) {
 
         // Create input- and output data
-        float srcArrayA[] = new float[arraysLength];
-        float srcArrayB[] = new float[arraysLength];
-        float dstArray[] = new float[arraysLength];
-        IntStream.range(0, arraysLength).forEach((i) -> {
-            srcArrayA[i] = i;
-            srcArrayB[i] = i;
-        });
-        Pointer srcA = Pointer.to(srcArrayA);
-        Pointer srcB = Pointer.to(srcArrayB);
-        Pointer dst = Pointer.to(dstArray);
+        float inPlus[] = new float[arraysLength];
+        float inMinus[] = new float[arraysLength];
+        float outPlus[] = new float[arraysLength];
+        float outMinus[] = new float[arraysLength];
+        /*IntStream.range(0, arraysLength).forEach((i) -> {
+            inPlus[i] = i;
+            inMinus[i] = i;
+        });*/
+        Pointer pntrInPlus = Pointer.to(inPlus);
+        Pointer pntrInMinus = Pointer.to(inMinus);
+        Pointer pntrOutPlus = Pointer.to(outPlus);
+        Pointer pntrOutMinus = Pointer.to(outMinus);
 
-        initialize(srcA, srcB);
+        initialize(pntrInPlus, pntrInMinus);
 
         // Set the arguments for the kernel
         clSetKernelArg(kernel, 0, Sizeof.cl_mem, Pointer.to(memObjects[0]));
         clSetKernelArg(kernel, 1, Sizeof.cl_mem, Pointer.to(memObjects[1]));
         clSetKernelArg(kernel, 2, Sizeof.cl_mem, Pointer.to(memObjects[2]));
+        clSetKernelArg(kernel, 3, Sizeof.cl_mem, Pointer.to(memObjects[3]));
 
         // Set the work-item dimensions
         long global_work_size[] = new long[]{maxGlobalWorkSize};
@@ -61,10 +64,12 @@ public class HostPart {
         clEnqueueNDRangeKernel(commandQueue, kernel, 1, null, global_work_size, local_work_size, 0, null, null);
 
         // Read the output data
-        clEnqueueReadBuffer(commandQueue, memObjects[2], CL_TRUE, 0, arraysLength * Sizeof.cl_float, dst, 0, null, null);
+        clEnqueueReadBuffer(commandQueue, memObjects[1], CL_TRUE, 0, arraysLength * Sizeof.cl_float, pntrOutPlus, 0, null, null);
+        clEnqueueReadBuffer(commandQueue, memObjects[3], CL_TRUE, 0, arraysLength * Sizeof.cl_float, pntrOutMinus, 0, null, null);
 
         //output the results to the console
-        IntStream.range(0, dstArray.length).mapToDouble(i -> dstArray[i]).forEach(System.out::println);
+        IntStream.range(0, outPlus.length).mapToDouble(i -> outPlus[i]).forEach(System.out::println);
+        IntStream.range(0, outMinus.length).mapToDouble(i -> outMinus[i]).forEach(System.out::println);
 
         shutdown();
     }
@@ -116,8 +121,9 @@ public class HostPart {
 
         // Allocate the memory objects for the input- and output data
         memObjects[0] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * arraysLength, pointerA, null);
-        memObjects[1] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * arraysLength, pointerB, null);
-        memObjects[2] = clCreateBuffer(context, CL_MEM_READ_WRITE, Sizeof.cl_float * arraysLength, null, null);
+        memObjects[1] = clCreateBuffer(context, CL_MEM_READ_WRITE, Sizeof.cl_float * arraysLength, null, null);
+        memObjects[2] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * arraysLength, pointerB, null);
+        memObjects[3] = clCreateBuffer(context, CL_MEM_READ_WRITE, Sizeof.cl_float * arraysLength, null, null);
 
         String programSource;
         if (Constants.kernelCreator.equals(Constants.KernelCreator.CODE.name())) {

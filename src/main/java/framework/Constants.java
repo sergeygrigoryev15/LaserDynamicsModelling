@@ -14,7 +14,7 @@ public class Constants {
     public static final String kernelName = props.getProperty("kernelName");
     public static final String clFileName = props.getProperty("clFileName");
 
-    public static final double resonatorPointsNumber = Double.valueOf(props.getProperty("resonatorPointsNumber"));
+    public static final int resonatorPointsNumber = Integer.valueOf(props.getProperty("resonatorPointsNumber"));
     public static final double time = Double.valueOf(props.getProperty("time"));
 
     //TODO add dt and dx evaluation

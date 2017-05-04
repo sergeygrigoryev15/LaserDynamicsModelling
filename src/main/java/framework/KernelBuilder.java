@@ -107,11 +107,8 @@ public class KernelBuilder {
                 "__local float plus[10000];\n" +
                 "__local float minus[10000];\n" +
                 "__local float D_AM[10000];\n" +
-                "" +
                 "float k1,k2,k3,k4,k5,k6,k7,k8,tmpD_AM;\n" +
-                "" +
                 "int num = get_global_id(0);\n" +
-                "" +
                 "startX = num*(numberOfX)/nk;\n" +
                 "if(num != nk-1){\n" +
                 "endX = (num+1)*(numberOfX)/nk;\n" +
