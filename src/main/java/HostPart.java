@@ -34,9 +34,6 @@ public class HostPart {
      */
     public static void main(String args[]) {
 
-        Resonator resonator = new ResonatorBuilder().buildResonator();
-        String programSource = new KernelBuilder(resonator).buildKernel();
-
         // Create input- and output data
         float srcArrayA[] = new float[arraysLength];
         float srcArrayB[] = new float[arraysLength];
