@@ -13,6 +13,7 @@ import framework.interfaces.JsonFiles;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.HashMap;
 import java.util.stream.IntStream;
 
 public class ResonatorBuilder implements JsonFiles {
@@ -42,8 +43,8 @@ public class ResonatorBuilder implements JsonFiles {
         return jsonObject.get("length").getAsDouble();
     }
 
-    private BaseResonatorPart[] getResonatorParts() {
-        BaseResonatorPart[] parts = new BaseResonatorPart[getNumberOfResonatorElements()];
+    private HashMap<ResonatorElementType, BaseResonatorPart> getResonatorParts() {
+        HashMap<ResonatorElementType, BaseResonatorPart> parts = new HashMap<>();
         IntStream.range(0, getNumberOfResonatorElements()).forEach(i -> {
             JsonObject tmpObject = getResonatorElements().get(i).getAsJsonObject();
             ResonatorElementType type = ResonatorElementType.getNameByValue(tmpObject.get("type").getAsString());
@@ -51,18 +52,20 @@ public class ResonatorBuilder implements JsonFiles {
             switch (type) {
                 case ACTIVE_MEDIA:
                     part = new ActiveMedia(tmpObject.get("name").getAsString(), tmpObject.get("ions concentration").getAsDouble());
+                    part.setLength(tmpObject.get("length").getAsDouble());
+                    parts.put(ResonatorElementType.ACTIVE_MEDIA, part);
                     break;
                 case VACUUM:
                     part = new Vacuum();
+                    part.setLength(tmpObject.get("length").getAsDouble());
+                    parts.put(ResonatorElementType.VACUUM, part);
                     break;
                 case SATURABLE_ABSORBER:
                     part = new SaturableAbsorber(tmpObject.get("name").getAsString(), tmpObject.get("ions concentration").getAsDouble());
+                    part.setLength(tmpObject.get("length").getAsDouble());
+                    parts.put(ResonatorElementType.SATURABLE_ABSORBER, part);
                     break;
-                default:
-                    part = new BaseResonatorPart();
             }
-            part.setLength(tmpObject.get("length").getAsDouble());
-            parts[i] = part;
         });
         return parts;
     }

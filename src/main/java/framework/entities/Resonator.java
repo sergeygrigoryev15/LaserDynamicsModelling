@@ -1,11 +1,14 @@
 package framework.entities;
 
 import framework.entities.resonatorParts.BaseResonatorPart;
+import framework.enums.ResonatorElementType;
+
+import java.util.HashMap;
 
 public class Resonator {
 
     private double length;
-    private BaseResonatorPart[] parts;
+    private HashMap<ResonatorElementType, BaseResonatorPart> parts;
 
     public double getLength() {
         return length;
@@ -16,11 +19,11 @@ public class Resonator {
         return this;
     }
 
-    public BaseResonatorPart[] getParts() {
+    public HashMap<ResonatorElementType, BaseResonatorPart> getParts() {
         return parts;
     }
 
-    public Resonator setParts(final BaseResonatorPart[] parts) {
+    public Resonator setParts(final HashMap<ResonatorElementType, BaseResonatorPart> parts) {
         this.parts = parts;
         return this;
     }

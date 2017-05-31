@@ -17,8 +17,6 @@ public class Constants {
     public static final int resonatorPointsNumber = Integer.valueOf(props.getProperty("resonatorPointsNumber"));
     public static final double time = Double.valueOf(props.getProperty("time"));
 
-    //TODO add dt and dx evaluation
-
     public static final double speedOfLight = Double.valueOf(props.getProperty("speedOfLight"));
     public static final double planksconst = Double.valueOf(props.getProperty("planksconst"));
     public static final double internalLoses = Double.valueOf(props.getProperty("internalLoses"));

@@ -18,7 +18,7 @@ public class HostPart {
 
     private static final Logger logger = LogManager.getLogger();
 
-    private static final int maxGlobalWorkSize = 1;
+    private static final int maxGlobalWorkSize = 10;
     private static final int arraysLength = Constants.resonatorPointsNumber;
 
     private static cl_program program;
@@ -39,10 +39,12 @@ public class HostPart {
         float inMinus[] = new float[arraysLength];
         float outPlus[] = new float[arraysLength];
         float outMinus[] = new float[arraysLength];
-        /*IntStream.range(0, arraysLength).forEach((i) -> {
+        /*
+        IntStream.range(0, arraysLength).forEach((i) -> {
             inPlus[i] = i;
             inMinus[i] = i;
-        });*/
+        });
+        */
         Pointer pntrInPlus = Pointer.to(inPlus);
         Pointer pntrInMinus = Pointer.to(inMinus);
         Pointer pntrOutPlus = Pointer.to(outPlus);
@@ -51,10 +53,10 @@ public class HostPart {
         initialize(pntrInPlus, pntrInMinus);
 
         // Set the arguments for the kernel
-        clSetKernelArg(kernel, 0, Sizeof.cl_mem, Pointer.to(memObjects[0]));
-        clSetKernelArg(kernel, 1, Sizeof.cl_mem, Pointer.to(memObjects[1]));
-        clSetKernelArg(kernel, 2, Sizeof.cl_mem, Pointer.to(memObjects[2]));
-        clSetKernelArg(kernel, 3, Sizeof.cl_mem, Pointer.to(memObjects[3]));
+        clSetKernelArg(kernel, 0, Sizeof.cl_mem, Pointer.to(memObjects[0]));//inPLUS
+        clSetKernelArg(kernel, 1, Sizeof.cl_mem, Pointer.to(memObjects[1]));//outPLUS
+        clSetKernelArg(kernel, 2, Sizeof.cl_mem, Pointer.to(memObjects[2]));//inMINUS
+        clSetKernelArg(kernel, 3, Sizeof.cl_mem, Pointer.to(memObjects[3]));//outMINUS
 
         // Set the work-item dimensions
         long global_work_size[] = new long[]{maxGlobalWorkSize};
