@@ -7,10 +7,11 @@
       "ions concentration": "4.3E26",
       "length": "0.00124"
     },
-    {
-      "type": "vacuum",
-      "length": "0"
-    },
+    /*   {
+         "type": "vacuum",
+         "length": "0"
+       },
+    */
     {
       "type": "saturable absorber",
       "name": "Nd",
