@@ -2,23 +2,25 @@ import framework.Constants;
 import framework.KernelBuilder;
 import framework.ResonatorBuilder;
 import framework.entities.Resonator;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import framework.enums.ResonatorElementType;
+import framework.interfaces.JsonFiles;
 import org.jocl.*;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import static org.jocl.CL.*;
 
-public class HostPart {
+public class HostPart implements JsonFiles {
 
-    private static final Logger logger = LogManager.getLogger();
-
-    private static final int maxGlobalWorkSize = 10;
+    private static final int maxGlobalWorkSize = 200;
     private static final int arraysLength = Constants.resonatorPointsNumber;
 
     private static cl_program program;
@@ -26,6 +28,8 @@ public class HostPart {
     private static cl_context context;
     private static cl_command_queue commandQueue;
     private static cl_mem memObjects[] = new cl_mem[4];
+
+    private static Resonator resonator = null;
 
     /**
      * Main part of the Host Part.
@@ -35,10 +39,10 @@ public class HostPart {
     public static void main(String args[]) {
 
         // Create input- and output data
-        float inPlus[] = new float[arraysLength];
-        float inMinus[] = new float[arraysLength];
-        float outPlus[] = new float[arraysLength];
-        float outMinus[] = new float[arraysLength];
+        double inPlus[] = new double[arraysLength];
+        double inMinus[] = new double[arraysLength];
+        double outPlus[] = new double[arraysLength];
+        double outMinus[] = new double[arraysLength];
         /*
         IntStream.range(0, arraysLength).forEach((i) -> {
             inPlus[i] = i;
@@ -66,12 +70,17 @@ public class HostPart {
         clEnqueueNDRangeKernel(commandQueue, kernel, 1, null, global_work_size, local_work_size, 0, null, null);
 
         // Read the output data
-        clEnqueueReadBuffer(commandQueue, memObjects[1], CL_TRUE, 0, arraysLength * Sizeof.cl_float, pntrOutPlus, 0, null, null);
-        clEnqueueReadBuffer(commandQueue, memObjects[3], CL_TRUE, 0, arraysLength * Sizeof.cl_float, pntrOutMinus, 0, null, null);
+        clEnqueueReadBuffer(commandQueue, memObjects[1], CL_TRUE, 0, arraysLength * Sizeof.cl_double, pntrOutPlus, 0, null, null);
+        clEnqueueReadBuffer(commandQueue, memObjects[3], CL_TRUE, 0, arraysLength * Sizeof.cl_double, pntrOutMinus, 0, null, null);
 
         //output the results to the console
-        IntStream.range(0, outPlus.length).mapToDouble(i -> outPlus[i]).forEach(System.out::println);
-        IntStream.range(0, outMinus.length).mapToDouble(i -> outMinus[i]).forEach(System.out::println);
+        //IntStream.range(0, outPlus.length).mapToDouble(i -> outPlus[i]).forEach(System.out::println);
+        //IntStream.range(0, outMinus.length).mapToDouble(i -> outMinus[i]).forEach(System.out::println);
+
+        //output the results to the files
+        writeToFile("outputPlus.txt", outPlus);
+        writeToFile("outputMinus.txt", outMinus);
+        writeSetupFile();
 
         shutdown();
     }
@@ -122,15 +131,15 @@ public class HostPart {
         commandQueue = clCreateCommandQueue(context, device, 0, null);
 
         // Allocate the memory objects for the input- and output data
-        memObjects[0] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * arraysLength, pointerA, null);
-        memObjects[1] = clCreateBuffer(context, CL_MEM_READ_WRITE, Sizeof.cl_float * arraysLength, null, null);
-        memObjects[2] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, Sizeof.cl_float * arraysLength, pointerB, null);
-        memObjects[3] = clCreateBuffer(context, CL_MEM_READ_WRITE, Sizeof.cl_float * arraysLength, null, null);
+        memObjects[0] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, Sizeof.cl_double * arraysLength, pointerA, null);
+        memObjects[1] = clCreateBuffer(context, CL_MEM_READ_WRITE, Sizeof.cl_double * arraysLength, null, null);
+        memObjects[2] = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, Sizeof.cl_double * arraysLength, pointerB, null);
+        memObjects[3] = clCreateBuffer(context, CL_MEM_READ_WRITE, Sizeof.cl_double * arraysLength, null, null);
 
         String programSource;
         if (Constants.kernelCreator.equals(Constants.KernelCreator.CODE.name())) {
             //Create kernel file from the source code
-            Resonator resonator = new ResonatorBuilder().buildResonator();
+            resonator = new ResonatorBuilder().buildResonator();
             programSource = new KernelBuilder(resonator).buildKernel();
         } else {
             //Create the program from the existing kernel file
@@ -190,8 +199,32 @@ public class HostPart {
         clReleaseCommandQueue(commandQueue);
         clReleaseContext(context);
     }
+
+    private static void writeToFile(String fileName, double[] arr) {
+        Path path = Paths.get(OUTPUTS_DIR.concat(fileName));
+        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+            IntStream.range(0, arr.length).forEach(i -> {
+                try {
+                    writer.write(String.format("%s\n", String.valueOf(arr[i]).replace("E", "*10^")));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (IOException ex) {
+            logger.fatal("error while writing results to the file" + ex);
+        }
+    }
+
+    private static void writeSetupFile() {
+        Path path = Paths.get(OUTPUTS_DIR.concat("setup.txt"));
+        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+            writer.write(String.format("resonator points number : %d\n", Constants.resonatorPointsNumber));
+            writer.write(String.format("time : %s\n", Constants.time));
+            writer.write(String.format("SA ions concentration : %s\n", ((framework.entities.resonatorParts.SaturableAbsorber) resonator.getParts().get(ResonatorElementType.SATURABLE_ABSORBER)).getIonsConcentration()));
+            writer.write(String.format("SA lifetime : %s", ((framework.entities.resonatorParts.SaturableAbsorber) resonator.getParts().get(ResonatorElementType.SATURABLE_ABSORBER)).getLifeTime()));
+            writer.write(String.format("AM lifetime : %s", ((framework.entities.resonatorParts.ActiveMedia) resonator.getParts().get(ResonatorElementType.ACTIVE_MEDIA)).getLifeTime()));
+        } catch (IOException ex) {
+            logger.fatal("error while writing results to the file" + ex);
+        }
+    }
 }
-
-
-
-

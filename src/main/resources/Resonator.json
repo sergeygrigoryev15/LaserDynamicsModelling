@@ -1,5 +1,5 @@
 {
-  "length": "0.00134",
+  "length": "0.00177",
   "parts": [
     {
       "type": "active media",
@@ -15,8 +15,8 @@
     {
       "type": "saturable absorber",
       "name": "Nd",
-      "ions concentration": "4.3E24",
-      "length": "0.0001"
+      "ions concentration": "2.83E12",
+      "length": "0.00053"
     }
   ]
 }

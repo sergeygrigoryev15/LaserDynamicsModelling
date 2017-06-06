@@ -9,7 +9,7 @@ public class ClStringConstants {
                     "float koefficient_A(){return %3$s;}\n" +
                     "float a_AM_PLUS(float x, float u){return %4$s*((koefficient_A()*x - 1)+ (1-x)*(exp(-u)*R_lum));}\n" +
                     "float a_AM_MINUS(float x, float u){return a_AM_PLUS(x, u);}\n" +
-                    "float a_SA_PLUS(float x){return %5$s*x + %4$s;}\n" +
+                    "float a_SA_PLUS(float x){return %5$s*x - %4$s;}\n" +
                     "float a_SA_MINUS(float x){return a_SA_PLUS(x);}\n" +
                     "float r_AM_PLUS(float x){return x*%4$s;}\n" +
                     "float r_AM_MINUS(float x){return -r_AM_PLUS(x);}\n" +
